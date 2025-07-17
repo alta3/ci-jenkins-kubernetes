@@ -23,14 +23,26 @@ pipeline {
                 sh 'pytest test_app.py'
             }
         }
-        stage('Build Image') {
-            steps {
-                sh 'docker build -t $REGISTRY/$IMAGE_NAME:$IMAGE_TAG .'
+        stage('Build and Push Image') {
+            agent {
+                kubernetes {
+                    label 'kaniko'
+                    defaultContainer 'kaniko'
+                }
             }
-        }
-        stage('Push Image') {
+            environment {
+                DOCKER_CONFIG = '/kaniko/.docker/'
+            }
             steps {
-                sh 'docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG'
+                sh '''
+                    /kaniko/executor \
+                      --context . \
+                      --dockerfile Dockerfile \
+                      --destination=$REGISTRY/$IMAGE_NAME:$IMAGE_TAG \
+                      --insecure \
+                      --skip-tls-verify \
+                      --verbosity debug
+                '''
             }
         }
         stage('Deploy to Kubernetes') {
