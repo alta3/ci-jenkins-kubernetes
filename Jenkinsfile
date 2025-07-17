@@ -12,6 +12,11 @@ pipeline {
             }
         }
         stage('Unit Tests') {
+            agent {
+                docker {
+                    image 'python:3.12-alpine'
+                }
+            }
             steps {
                 sh 'pip install -r requirements.txt'
                 sh 'pytest test_app.py'
