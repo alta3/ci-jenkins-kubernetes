@@ -13,8 +13,9 @@ pipeline {
         }
         stage('Unit Tests') {
             agent {
-                docker {
-                    image 'python:3.12-alpine'
+                kubernetes {
+                    label 'python'
+                    defaultContainer 'python'
                 }
             }
             steps {
