@@ -8,6 +8,10 @@ metadata:
   labels:
     jenkins: kaniko-deploy
 spec:
+  hostAliases:
+    - ip: 10.7.10.47
+      hostnames:
+        - "bchd.registry"
   serviceAccountName: jenkins
   containers:
     - name: kaniko
