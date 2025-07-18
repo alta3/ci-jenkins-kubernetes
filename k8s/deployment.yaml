@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: myapp
-        image: ghcr.io/csfeeser/ci-jenkins-kubernetes/placeholder  # Jenkins replaces this dynamically
+        image: placeholder  # Jenkins replaces this dynamically
         ports:
         - containerPort: 5000
         readinessProbe:
