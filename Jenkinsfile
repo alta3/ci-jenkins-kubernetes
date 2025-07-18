@@ -60,7 +60,7 @@ spec:
     }
   }
   environment {
-    IMAGE = "ghcr.io/csfeeser/ci-jenkins-kubernetes/myapp:${env.BUILD_NUMBER}"
+      IMAGE = "ghcr.io/csfeeser/ci-jenkins-kubernetes/myapp:${BUILD_NUMBER}"
   }
 
   stages {
@@ -97,11 +97,11 @@ spec:
     stage('Deploy to Kubernetes') {
       steps {
         container('kubectl') {
-          sh """
-            sed -i 's|placeholder|${IMAGE}|' k8s/deployment.yaml
-            kubectl apply -f k8s/deployment.yaml
-            kubectl apply -f k8s/service.yaml
-          """
+          script {
+            sh "sed -i 's|placeholder|${env.IMAGE}|' k8s/deployment.yaml"
+            sh 'kubectl apply -f k8s/deployment.yaml'
+            sh 'kubectl apply -f k8s/service.yaml'
+          }
         }
       }
     }
