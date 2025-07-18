@@ -15,6 +15,12 @@ spec:
     spec:
       containers:
       - name: myapp
-        image: placeholder
+        image: placeholder  # Jenkins replaces this dynamically
         ports:
         - containerPort: 5000
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 3
+          periodSeconds: 5
