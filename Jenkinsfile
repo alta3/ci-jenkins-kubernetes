@@ -61,7 +61,7 @@ spec:
     }
   }
   environment {
-    IMAGE = "bchd.registry/myapp:${env.BUILD_NUMBER}"
+    IMAGE = "bchd.registry:2345/myapp:${env.BUILD_NUMBER}"
   }
 
   stages {
