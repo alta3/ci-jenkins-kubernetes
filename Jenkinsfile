@@ -103,7 +103,8 @@ spec:
       steps {
         container('kubectl') {
           sh '''
-            kubectl set image -f k8s/deployment.yaml myapp=${IMAGE}
+            kubectl apply -f k8s/deployment.yaml
+            kubectl set image deployment/myapp myapp=${IMAGE}
             kubectl apply -f k8s/service.yaml
           '''
         }
