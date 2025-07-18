@@ -15,6 +15,7 @@ pipeline {
             agent {
                 kubernetes {
                     label 'python'
+                    inheritFrom 'python'
                     defaultContainer 'python'
                 }
             }
@@ -27,6 +28,7 @@ pipeline {
             agent {
                 kubernetes {
                     label 'kaniko'
+                    inheritFrom 'kaniko'
                     defaultContainer 'kaniko'
                 }
             }
