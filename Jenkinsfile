@@ -1,10 +1,16 @@
 pipeline {
     agent any
+    environment {
+        REGISTRY = 'localhost:5000'
+        IMAGE_NAME = 'simple-app'
+        IMAGE_TAG = 'v1'
+    }
     stages {
         stage('Kaniko Smoke Test') {
             agent {
                 kubernetes {
                     label 'kaniko'
+                    inheritFrom 'kaniko'
                     defaultContainer 'kaniko'
                 }
             }
@@ -16,10 +22,10 @@ pipeline {
                     /kaniko/executor \
                       --context . \
                       --dockerfile Dockerfile \
-                      --destination=localhost:5000/test-image:v1 \
+                      --destination=$REGISTRY/$IMAGE_NAME:$IMAGE_TAG \
                       --insecure \
                       --skip-tls-verify \
-                      --verbosity debug || true
+                      --verbosity debug
                 '''
             }
         }
