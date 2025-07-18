@@ -89,7 +89,9 @@ spec:
             /kaniko/executor \
               --context \"${WORKSPACE}\" \
               --dockerfile Dockerfile \
-              --destination=\"${IMAGE}\"
+              --destination=\"${IMAGE}\" \
+              --insecure \
+              --skip-tls-verify
           """
         }
       }
