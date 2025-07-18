@@ -23,7 +23,7 @@ spec:
         - name: kaniko-secret
           mountPath: /kaniko/.docker
     - name: kubectl
-      image: bitnami/kubectl:latest
+      image: bitnami/kubectl:latest-debian-11
       command:
         - /bin/sh
         - -c
