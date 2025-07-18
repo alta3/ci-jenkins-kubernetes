@@ -4,20 +4,14 @@ pipeline {
       yaml """
 apiVersion: v1
 kind: Pod
+metadata:
+  labels:
+    jenkins: kaniko-deploy
 spec:
   serviceAccountName: jenkins
-  volumes:
-    - name: kaniko-secret
-      projected:
-        sources:
-          - secret:
-              name: reg-credentials
-              items:
-                - key: .dockerconfigjson
-                  path: config.json
   containers:
     - name: kaniko
-      image: gcr.io/kaniko-project/executor:latest
+      image: gcr.io/kaniko-project/executor:debug
       command:
         - /busybox/cat
       tty: true
@@ -31,6 +25,33 @@ spec:
         - -c
         - sleep 99d
       tty: true
+      volumeMounts:
+        - name: kubeconfig
+          mountPath: /root/.kube
+    - name: python
+      image: python:3.12-alpine
+      command:
+        - /bin/sh
+        - -c
+        - sleep 99d
+      tty: true
+  volumes:
+    - name: kaniko-secret
+      projected:
+        sources:
+          - secret:
+              name: reg-credentials
+              items:
+                - key: .dockerconfigjson
+                  path: config.json
+    - name: kubeconfig
+      projected:
+        sources:
+          - secret:
+              name: kubeconfig-id
+              items:
+                - key: config
+                  path: config
   restartPolicy: Never
 """
     }
@@ -38,6 +59,7 @@ spec:
   environment {
     IMAGE = "bchd.registry/myapp:${env.BUILD_NUMBER}"
   }
+
   stages {
     stage('Checkout') {
       steps {
@@ -46,7 +68,7 @@ spec:
     }
     stage('Run Tests') {
       steps {
-        container('kaniko') {
+        container('python') {
           sh '''
             python3 -m venv venv
             . venv/bin/activate
@@ -71,13 +93,10 @@ spec:
     stage('Deploy to Kubernetes') {
       steps {
         container('kubectl') {
-          withCredentials([file(credentialsId: 'kubeconfig-id', variable: 'KUBECONFIG')]) {
-            sh '''
-              echo "$KUBECONFIG" > /tmp/kubeconfig
-              kubectl --kubeconfig=/tmp/kubeconfig set image -f k8s/deployment.yaml myapp="${IMAGE}"
-              kubectl --kubeconfig=/tmp/kubeconfig apply -f k8s/service.yaml
-            '''
-          }
+          sh '''
+            kubectl set image -f k8s/deployment.yaml myapp=${IMAGE}
+            kubectl apply -f k8s/service.yaml
+          '''
         }
       }
     }
