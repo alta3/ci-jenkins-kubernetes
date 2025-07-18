@@ -23,12 +23,15 @@ spec:
         - name: kaniko-secret
           mountPath: /kaniko/.docker
     - name: kubectl
-      image: bitnami/kubectl:1.29.2-debian-11-r0
+      image: lachlanevenson/k8s-kubectl:v1.29.2
       command:
         - /bin/sh
         - -c
         - sleep 99d
       tty: true
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
       volumeMounts:
         - name: kubeconfig
           mountPath: /root/.kube
