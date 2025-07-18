@@ -81,12 +81,12 @@ spec:
     stage('Build & Push Image') {
       steps {
         container('kaniko') {
-          sh '''
+          sh """
             /kaniko/executor \
-              --context `pwd` \
+              --context \"${WORKSPACE}\" \
               --dockerfile Dockerfile \
-              --destination="${IMAGE}"
-          '''
+              --destination=\"${IMAGE}\"
+          """
         }
       }
     }
