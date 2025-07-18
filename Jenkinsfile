@@ -102,11 +102,11 @@ spec:
     stage('Deploy to Kubernetes') {
       steps {
         container('kubectl') {
-          sh '''
+          sh """
+            sed -i 's|placeholder|${IMAGE}|' k8s/deployment.yaml
             kubectl apply -f k8s/deployment.yaml
-            kubectl set image deployment/myapp myapp=${IMAGE}
             kubectl apply -f k8s/service.yaml
-          '''
+          """
         }
       }
     }
